@@ -223,7 +223,7 @@ with 20 ms resolution at best.
 **The 8 kHz telephony gap.** Trained overwhelmingly on wideband audio, Whisper on
 upsampled 8 kHz phone audio sees an empty band above 4 kHz — out of distribution, and
 precisely where the fricative cues live
-([`../01-foundations/01-sound-and-sampling.md`](01-sound-and-sampling.md)). Expect a
+([`../01-foundations/01-sound-and-sampling.md`](../01-foundations/01-sound-and-sampling.md)). Expect a
 measurable WER penalty and confusions among /s/, /f/ and /θ/
 ([`../07-livekit/05-telephony-sip.md`](../07-livekit/05-telephony-sip.md)).
 

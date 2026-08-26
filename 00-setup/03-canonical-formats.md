@@ -614,38 +614,38 @@ value you did not expect. `../06-realtime-systems/06-observability.md`.
 
 ## 6. Exercises
 
-**E0.1** Write a function that, given only a `bytes` object, decides whether it is more likely
+**E0.3.1** Write a function that, given only a `bytes` object, decides whether it is more likely
 `s16le` or `s16be` audio. Justify your statistic (hint: consider the distribution of
 $|x_{n} - x_{n-1}|$ for speech under each interpretation). Test it by byte-swapping a real
 recording. Report your accuracy on 100 ms segments and on 1 s segments.
 
-**E0.2** Synthesise a 6 kHz sine at 16 kHz. Decimate to 8 kHz (a) by `x[::2]` and (b) with the
+**E0.3.2** Synthesise a 6 kHz sine at 16 kHz. Decimate to 8 kHz (a) by `x[::2]` and (b) with the
 band-limited `resample` above. Predict the alias frequency from $|f - k f_s|$ *before*
 running, then verify by locating the FFT peak. Then repeat with a 4 kHz sine and explain why
 the result is ambiguous.
 
-**E0.3** Take a recording of yourself saying "six sisters sell seashells". Lowpass it at 3400
+**E0.3.3** Take a recording of yourself saying "six sisters sell seashells". Lowpass it at 3400
 Hz to simulate G.711's passband, and measure the ratio of energy in 3.5–8 kHz before and after
 for the sibilant segments only (segment by hand or by a simple high-frequency-energy
 threshold). Compare your measured ratio to the −11.1 dB the flat-noise model of §2.1 predicts
 for a 4 kHz cutoff, and explain any discrepancy.
 
-**E0.4** Implement A-law (`ITU-T G.711`, the European variant: 13-bit input, different bias
+**E0.3.4** Implement A-law (`ITU-T G.711`, the European variant: 13-bit input, different bias
 and segment table) and verify it bit-exactly against `audioop.lin2alaw` over all 65 536 int16
 inputs. Then produce the A-law equivalent of the SNR-vs-level table in §3 and state, with
 numbers, which of the two companding laws is better at −50 dBFS and which at −3 dBFS.
 
-**E0.5** Write a WAV file with a 200-byte `LIST` chunk between `fmt ` and `data`, and an
+**E0.3.5** Write a WAV file with a 200-byte `LIST` chunk between `fmt ` and `data`, and an
 odd-sized `cue ` chunk after `data`. Confirm that a parser hardcoding offset 44 produces
 garbage, that one which forgets the `size & 1` pad byte desynchronises, and that the `wav_read`
 above handles both.
 
-**E0.6** Instrument the `Framer` to count `bytes` allocations per 640-byte frame emitted.
+**E0.3.6** Instrument the `Framer` to count `bytes` allocations per 640-byte frame emitted.
 Then rewrite it to emit `memoryview` slices of a single pre-allocated backing buffer with zero
 per-frame allocation, and measure the throughput difference in frames/second. State how many
 concurrent 20 ms streams each version could sustain on one core.
 
-**E0.7** Given a 20 ms frame grid and a Silero VAD requiring 512-sample windows, write the
+**E0.3.7** Given a 20 ms frame grid and a Silero VAD requiring 512-sample windows, write the
 adapter that produces VAD windows from the frame stream. Prove — by asserting on sample
 indices, not frame counts — that no sample is dropped or duplicated over 10 seconds, and
 report the worst-case additional latency the adapter introduces.

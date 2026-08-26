@@ -605,41 +605,41 @@ tolerate phonetic misspellings, not merely semantic noise.
 
 ## 6. Exercises
 
-**E2.2.1.** Implement the counting-semiring version of `ctc_forward` (replace `_logsumexp` with integer
+**E2.2.1** Implement the counting-semiring version of `ctc_forward` (replace `_logsumexp` with integer
 `+` and drop the emission term) and verify $\binom{T+U-r}{2U}$ for 500 random $(T, y)$ pairs with
 $|V| = 4$, $U \le 10$, $T \le 60$. Then find and explain the smallest $(T, y)$ for which the count is
 exactly zero.
 
-**E2.2.2.** Break the skip-arc condition three ways — (a) drop the `z[s] != blank` test, (b) drop the
+**E2.2.2** Break the skip-arc condition three ways — (a) drop the `z[s] != blank` test, (b) drop the
 `z[s] != z[s-2]` test, (c) allow the skip unconditionally — and for each, report the target string and
 $T$ at which your loss first disagrees with `F.ctc_loss` by more than $10^{-6}$. Explain each
 disagreement in one sentence.
 
-**E2.2.3.** Verify Eq. (7) by central finite differences: perturb each logit by $\pm h$, recompute the
+**E2.2.3** Verify Eq. (7) by central finite differences: perturb each logit by $\pm h$, recompute the
 loss with `ctc_forward` only, and compare against the analytic gradient. Sweep
 $h \in \{10^{-3}, 10^{-5}, 10^{-7}\}$ and report where the finite-difference error is minimised.
 Explain the U-shape in terms of truncation versus cancellation error.
 
-**E2.2.4.** Convert `ctc_forward` to float32 and find the smallest $T$ at which the log-space version
+**E2.2.4** Convert `ctc_forward` to float32 and find the smallest $T$ at which the log-space version
 and a naive linear-probability version disagree by more than 1%. Then find the $T$ at which the linear
 version returns exactly 0.0, and compare it to the $\log_2$ of the float32 minimum subnormal.
 
-**E2.2.5.** Construct a $(T, C)$ log-probability matrix on which greedy decoding beats prefix beam
+**E2.2.5** Construct a $(T, C)$ log-probability matrix on which greedy decoding beats prefix beam
 search at width 2 but loses at width 4. Report the matrix and the three transcripts involved. (Hint:
 you need a decoy prefix that dominates early and dies late.)
 
-**E2.2.6.** Add shallow fusion to `prefix_beam_search`: a character bigram LM estimated from any text
+**E2.2.6** Add shallow fusion to `prefix_beam_search`: a character bigram LM estimated from any text
 file, scored as $\log p_{\text{ac}} + \alpha \log p_{\text{lm}} + \beta |y|$. On the §3.3 matrix, find
 the $(\alpha, \beta)$ region in which the top hypothesis changes, and explain why $\beta$ is needed at
 all.
 
-**E2.2.7.** Download a streaming CTC model from `sherpa-onnx`, run it on 30 s of your own speech, and
+**E2.2.7** Download a streaming CTC model from `sherpa-onnx`, run it on 30 s of your own speech, and
 measure (a) the fraction of output frames whose argmax is blank and (b) the mean spike width at half
 maximum, in frames. Then compare the emitted token frame indices against a hand-marked word-level
 reference and report the mean signed offset in milliseconds. Does the spike lead or lag the acoustic
 onset?
 
-**E2.2.8.** Prove that CTC cannot represent the distribution "output `ab` or `ba`, each with probability
+**E2.2.8** Prove that CTC cannot represent the distribution "output `ab` or `ba`, each with probability
 exactly 0.5, and nothing else" for any $T$ and any frame posteriors. Then state the smallest
 architectural change that fixes it, and name the model family that made that change.
 

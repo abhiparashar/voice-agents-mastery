@@ -35,7 +35,7 @@ than inherit.
 3. **From scratch** — code you can read end to end (numpy / PyTorch / stdlib only, fully standalone, no framework magic).
 4. **How production does it** — the corresponding code path in a real OSS project, cited by repo + file + symbol (LiveKit Agents, Pipecat, faster-whisper, whisper.cpp, NeMo, icefall, sherpa-onnx, Silero, Kokoro, Piper, Moshi, vLLM, WebRTC).
 5. **At scale** — what breaks at 1 → 100 → 10,000 concurrent conversations, with the arithmetic.
-6. **Exercises** — 4–8 short drills, answers in `09-mastery/03-answers.md`.
+6. **Exercises** — 4–8 short drills, all 377 have worked answers in `09-mastery/03-answers.md`.
 7. **Interview drill** — the question a staff-level interviewer would actually ask.
 
 **Claim discipline.** `[MEASURED]` = actually run on this machine. `[INFERENCE]` =
@@ -53,7 +53,7 @@ introduced from zero.
 
 ---
 
-## 2. The map (54 chapters)
+## 2. The map (55 chapters)
 
 ### `00-setup/` — the bench, and the cost of everything
 | File | Contents |
@@ -168,7 +168,7 @@ The dependency order matters: each week's material is *used* by the next.
 | **7. Systems** | `06-realtime-systems/01..08` | Design the platform: transport, frame graph, scale, reliability, deployment |
 | **8. Platform + rigour** | `07-livekit/01..06` → `08-eval-safety/*` → `09-mastery/*` | Own the LiveKit stack, evaluate it against alternatives, and pass the interview |
 
-Total reading: ~54 chapters. At 2 chapters/day this is ~4 weeks; at 1/day, 8 weeks.
+Total reading: 55 chapters. At 2 chapters/day this is ~4 weeks; at 1/day, 8 weeks.
 The exercises are where the learning actually happens — do them.
 
 ---

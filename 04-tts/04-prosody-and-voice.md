@@ -153,7 +153,7 @@ grammatical.
 
 Reading a booking reference like `A7F-22K` aloud is a distinct problem, because letters are
 acoustically confusable — B/D/E/P/T/V/C/G/Z form a cluster, and F/S another. On a narrowband
-phone line ([`../01-foundations/01-sound-and-sampling.md`](01-sound-and-sampling.md)) the
+phone line ([`../01-foundations/01-sound-and-sampling.md`](../01-foundations/01-sound-and-sampling.md)) the
 fricatives lose their distinguishing energy entirely.
 
 Strategies, with their costs:
@@ -466,7 +466,7 @@ state your recommendation with the cost implication.
 
 **E4.4.6** Take the §3 `say_reference` and evaluate it over a narrowband (8 kHz) channel by
 downsampling the synthesised audio. Which letters remain confusable even with NATO words,
-and why ([`../01-foundations/01-sound-and-sampling.md`](01-sound-and-sampling.md))?
+and why ([`../01-foundations/01-sound-and-sampling.md`](../01-foundations/01-sound-and-sampling.md))?
 
 **E4.4.7** Write the consent and disclosure implementation plan for a cloned-voice
 deployment: the data model for consent records, the disclosure utterance and its
