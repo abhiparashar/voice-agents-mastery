@@ -45,7 +45,7 @@ projects come later.
 | Whisper, faster-whisper, Distil-Whisper deep dive | [`02-asr/04`](../02-asr/04-attention-and-whisper.md) | `++` every decoding threshold read from source and explained as the failure it prevents; adds whisper.cpp, WhisperX, MLX |
 | Implement local transcription pipeline in Python | [`02-asr/04`](../02-asr/04-attention-and-whisper.md) §3–4; [`02-asr/08-serving-asr.md`](../02-asr/08-serving-asr.md) | `+` adds runtime/quantisation choice and the WER re-measurement rule |
 | Microphone recording and live transcription | [`01-foundations/03-audio-io-and-buffering.md`](../01-foundations/03-audio-io-and-buffering.md); [`02-asr/05-streaming-asr.md`](../02-asr/05-streaming-asr.md) | `++` adds the real-time callback contract, ring buffers, clock drift, LocalAgreement stabilisation |
-| Voice Activity Detection (VAD) for speech pipelines | [`03-turn-taking/01-vad.md`](../03-turn-taking/01-vad.md) | `++` three VADs implemented (energy, GMM, Silero) with ROC curves and operating-point selection |
+| Voice Activity Detection (VAD) for speech pipelines | [`03-turn-taking/01-vad.md`](../03-turn-taking/01-vad.md) | `++` energy and GMM VADs implemented from scratch, Silero integrated correctly, with ROC curves and operating-point selection |
 
 ## 4. Day 3 — Text-to-Speech & Voice Output
 

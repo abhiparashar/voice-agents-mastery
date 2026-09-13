@@ -90,7 +90,7 @@ introduced from zero.
 ### `03-turn-taking/` — the module that separates experts from demo-builders
 | File | Contents |
 |---|---|
-| `01-vad.md` | Energy/ZCR → WebRTC GMM → Silero DNN, all three implemented; ROC/DET curves; hysteresis; why the threshold is a product decision |
+| `01-vad.md` | Energy/ZCR and a six-subband WebRTC-style GMM likelihood-ratio detector, both implemented from scratch; Silero DNN integrated via source-verified defaults; ROC curves; hysteresis; why the threshold is a product decision |
 | `02-endpointing.md` | Turn-end detection as decision theory: the asymmetric cost of cutting off vs dead air, fixed vs adaptive vs prosodic vs semantic, and the measured cut-off/latency frontier |
 | `03-semantic-turn-detection.md` | Transformer turn detectors (LiveKit's plugin, Smart Turn v2): architecture, training, calibration, and how to fuse them with a VAD timer |
 | `04-barge-in.md` | Full-duplex mechanics: which of four interrupt signals to act on, the TTS-flush race, truncating the transcript to what the user actually *heard*, backchannels, async cancellation and the zombie-TTS bug |

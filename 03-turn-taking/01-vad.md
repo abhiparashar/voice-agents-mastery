@@ -227,12 +227,42 @@ decision-maker. Cascading them — cheap gate rejects obvious silence, neural mo
 adjudicates the rest — is a common and effective pattern that cuts neural VAD compute
 substantially on typical audio, since most of a call is silence.
 
+A from-scratch reduction of this design — six-subband log-energy features feeding one
+noise Gaussian and one speech Gaussian per band, updated online by whichever model the
+summed log-likelihood ratio currently favours — is implemented in §3
+(`subband_log_energy`, `gmm_llr_vad`) and measured here on the same synthetic audio as
+§2.2 `[MEASURED]`:
+
+| SNR | Detector | AUC | Best F1 |
+|---|---|---|---|
+| 20 dB | energy − 20·ZCR (§2.2) | 0.985 | 0.970 |
+| 20 dB | 6-band GMM-LLR | 0.948 | 0.923 |
+| 10 dB | energy − 20·ZCR (§2.2) | 0.957 | 0.928 |
+| 10 dB | 6-band GMM-LLR | 0.924 | 0.869 |
+| 5 dB | energy − 20·ZCR (§2.2) | 0.926 | 0.895 |
+| 5 dB | 6-band GMM-LLR | 0.885 | 0.835 |
+| 0 dB | energy − 20·ZCR (§2.2) | 0.899 | 0.855 |
+| 0 dB | 6-band GMM-LLR | 0.894 | 0.850 |
+
+On this synthetic signal the subband model trails the simple combined feature at every
+SNR — six bands are more online parameters to track than a stationary noise floor gives
+it information for, and early frames are still converging. But its *degradation slope*
+is flatter: AUC falls 0.054 from 20 dB to 0 dB (0.948 → 0.894) against 0.086 for the
+combined energy feature (0.985 → 0.899). That flatness is §2.2's adaptive-noise-floor
+requirement arriving for free — each band's noise Gaussian re-centres on the current
+floor every frame, instead of needing an external percentile tracker. White noise is
+the case least favourable to a subband model, since every band's SNR is identical;
+E3.1.3 measures the non-stationary case where that per-band adaptation is supposed to
+earn its cost.
+
+
 ---
 
 ## 3. From scratch
 
-Energy and ZCR features, ROC evaluation, and the hysteresis-plus-hangover state machine
-whose operating point §2.4 searched. Standalone, numpy only.
+Energy and ZCR features, ROC evaluation, the hysteresis-plus-hangover state machine
+whose operating point §2.4 searched, and a from-scratch six-subband Gaussian
+likelihood-ratio VAD in WebRTC's design (§2.6). Standalone, numpy only.
 
 ```python
 """Energy/ZCR VAD with ROC evaluation and a hysteresis + hangover state machine."""
@@ -323,6 +353,45 @@ def prf(pred, y):
     p, r = tp / max(tp + fp, 1), tp / max(tp + fn, 1)
     return p, r, 2 * p * r / max(p + r, 1e-9)
 
+def subband_log_energy(X, sr=SR, edges=((80, 250), (250, 500), (500, 1000),
+                                         (1000, 2000), (2000, 3000), (3000, 4000))):
+    """Per-frame log-energy in WebRTC's six sub-bands (common_audio/vad/vad_core.c
+    kLowerBand/kUpperBand), via rFFT bin grouping instead of WebRTC's QMF cascade."""
+    n = X.shape[1]
+    spec = np.fft.rfft(X * np.hanning(n), axis=1)
+    power = spec.real ** 2 + spec.imag ** 2
+    freqs = np.fft.rfftfreq(n, d=1 / sr)
+    feats = np.zeros((X.shape[0], len(edges)))
+    for i, (lo, hi) in enumerate(edges):
+        band = (freqs >= lo) & (freqs < hi)
+        feats[:, i] = np.log(power[:, band].sum(axis=1) + 1e-9)
+    return feats
+
+def gmm_llr_vad(feats, init_frames=15, lr=0.01, prior_offset=4.0):
+    """Six-subband likelihood-ratio VAD in WebRTC's GmmProbability family: per band,
+    track one noise Gaussian and one speech Gaussian (a single-component reduction of
+    WebRTC's two-component mixture, in the Sohn et al. 1999 tradition cited below),
+    classify each frame by the summed log-likelihood ratio, and recursively update
+    whichever model the frame was assigned to. Online, no separate training pass."""
+    T = feats.shape[0]
+    noise_mean = feats[:init_frames].mean(axis=0).copy()
+    noise_var = feats[:init_frames].var(axis=0) + 1.0
+    speech_mean, speech_var = noise_mean + prior_offset, noise_var.copy()
+    llr = np.zeros(T)
+    for t in range(T):
+        x = feats[t]
+        ln_noise = -0.5 * np.log(2 * np.pi * noise_var) - (x - noise_mean) ** 2 / (2 * noise_var)
+        ln_speech = -0.5 * np.log(2 * np.pi * speech_var) - (x - speech_mean) ** 2 / (2 * speech_var)
+        llr[t] = (ln_speech - ln_noise).sum()
+        if llr[t] > 0:
+            speech_mean += lr * (x - speech_mean)
+            speech_var += lr * ((x - speech_mean) ** 2 - speech_var)
+        else:
+            noise_mean += lr * (x - noise_mean)
+            noise_var += lr * ((x - noise_mean) ** 2 - noise_var)
+        noise_var, speech_var = np.maximum(noise_var, 0.1), np.maximum(speech_var, 0.1)
+    return llr
+
 if __name__ == "__main__":
     rng = np.random.default_rng(2)
     print(f"{'snr':>5} {'feature':>18} {'AUC':>7} {'bestF1':>7} {'thresh':>9}")
@@ -334,6 +403,15 @@ if __name__ == "__main__":
                          ("energy - 20*ZCR", e - 20 * z)):
             auc, f1, th = roc(sc, y)
             print(f"{snr:5d} {name:>18} {auc:7.3f} {f1:7.3f} {th:9.2f}")
+
+    print()
+    rng2 = np.random.default_rng(2)
+    for snr in (20, 10, 5, 0):
+        x, truth = synth(60, snr, rng2)
+        X, y = to_frames(x, truth)
+        llr = gmm_llr_vad(subband_log_energy(X))
+        auc, f1, th = roc(llr, y)
+        print(f"{snr:5d} {'6-band GMM-LLR':>18} {auc:7.3f} {f1:7.3f} {th:9.2f}")
 
     # Fragmentation: the metric frame F1 cannot see.
     x, truth = synth(60, 5, rng)
@@ -443,8 +521,11 @@ instead of energy alone. Does the optimal hangover change? Explain why or why no
 the physical cause of fragmentation.
 
 **E3.1.3** Add a non-stationary interferer — a second harmonic stack at a different
-$F_0$, standing in for a television — at 0 dB SNR. Report AUC for energy, ZCR and the
-combination. Explain the result in terms of §2.1's three cue families.
+$F_0$, standing in for a television — at 0 dB SNR. Report AUC for energy, ZCR, the
+combination, and the §2.6 six-band GMM-LLR detector. Explain the result in terms of
+§2.1's three cue families, and say whether the subband model's per-band noise tracking
+closes any of the gap to the combined feature now that the noise is no longer
+stationary.
 
 **E3.1.4** Implement the two-stage cascade from §2.6: a permissive cheap gate followed by
 the full detector. Measure the fraction of frames reaching stage two and the change in
@@ -512,8 +593,8 @@ no reason to be the right tradeoff.
 ## Sources
 
 - `snakers4/silero-vad`, `src/silero_vad/utils_vad.py` (master, retrieved 2026-08-22) — `num_samples = 512 if sr == 16000 else 256`, and the `get_speech_timestamps` defaults `threshold=0.5`, `min_speech_duration_ms=250`, `min_silence_duration_ms=100`, `speech_pad_ms=30`, `max_speech_duration_s=inf`, `neg_threshold`, `window_size_samples=512` quoted in §2.5.
-- WebRTC source, `common_audio/vad` — the six-sub-band GMM likelihood-ratio design and aggressiveness modes described in §2.6; `wiseman/py-webrtcvad` for the Python binding and its 8/16/32/48 kHz, 10/20/30 ms frame constraints.
+- WebRTC source, `common_audio/vad` — the six-sub-band GMM likelihood-ratio design and aggressiveness modes described in §2.6; `wiseman/py-webrtcvad` for the Python binding and its 8/16/32/48 kHz, 10/20/30 ms frame constraints. The from-scratch reduction in §3 (`subband_log_energy`, `gmm_llr_vad`) uses WebRTC's own band edges (`kLowerBand`/`kUpperBand`) with a single-Gaussian-per-class simplification of its two-component mixture.
 - `livekit-agents` 1.7.0 package metadata (PyPI JSON, retrieved 2026-08-22) — the `silero` extra and `livekit-plugins-silero` referenced in §4.
 - `pyannote/pyannote-audio` — neural voice-activity and overlapped-speech detection.
-- Sohn, J., Kim, N. S. & Sung, W. (1999). *A statistical model-based voice activity detection.* IEEE Signal Processing Letters 6(1) — the likelihood-ratio formulation underlying classical VADs.
-- All `[MEASURED]` values in §2.2, §2.3 and §2.4 were produced by the code in §3 on Apple M5 / macOS 26.5.2 via `uv run --python 3.12 --with numpy`, numpy 2.5.2, on synthetic audio with generator-derived ground truth. Synthetic signals overstate absolute performance; the *relative* findings (threshold drift with SNR, fragmentation at best frame F1, hangover dominating hysteresis) are the transferable results.
+- Sohn, J., Kim, N. S. & Sung, W. (1999). *A statistical model-based voice activity detection.* IEEE Signal Processing Letters 6(1) — the likelihood-ratio formulation underlying classical VADs, and the formulation §3's `gmm_llr_vad` recursive update follows.
+- All `[MEASURED]` values in §2.2, §2.3, §2.4 and §2.6 were produced by the code in §3 on Apple M5 / macOS 26.5.2 via `uv run --python 3.12 --with numpy`, numpy 2.5.2, on synthetic audio with generator-derived ground truth. Synthetic signals overstate absolute performance; the *relative* findings (threshold drift with SNR, fragmentation at best frame F1, hangover dominating hysteresis, the subband model's flatter degradation slope) are the transferable results.
