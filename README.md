@@ -53,7 +53,7 @@ introduced from zero.
 
 ---
 
-## 2. The map (55 chapters)
+## 2. The map (55 chapters, plus a mini-projects list)
 
 ### `00-setup/` — the bench, and the cost of everything
 | File | Contents |
@@ -150,6 +150,7 @@ introduced from zero.
 | `02-mastery-checklist.md` | ~120 falsifiable capability statements, each pointing at the chapter that teaches it, with a scoring rubric |
 | `03-answers.md` | Worked answers to every chapter exercise |
 | `04-glossary.md` | ~200 terms with precise definitions, units, and the confusions that matter (VAD ≠ endpointing, TTFB ≠ TTFA, jitter ≠ latency) |
+| `05-mini-projects.md` | A list of small, single-concept projects (30 min – 2 hr each) mapped to specific chapters, distinct from the multi-week capstones in `00-setup/05-bootcamp-coverage.md` §12 |
 
 ---
 
@@ -168,7 +169,7 @@ The dependency order matters: each week's material is *used* by the next.
 | **7. Systems** | `06-realtime-systems/01..08` | Design the platform: transport, frame graph, scale, reliability, deployment |
 | **8. Platform + rigour** | `07-livekit/01..06` → `08-eval-safety/*` → `09-mastery/*` | Own the LiveKit stack, evaluate it against alternatives, and pass the interview |
 
-Total reading: 55 chapters. At 2 chapters/day this is ~4 weeks; at 1/day, 8 weeks.
+Total reading: 55 chapters plus the `09-mastery/05-mini-projects.md` list. At 2 chapters/day this is ~4 weeks; at 1/day, 8 weeks.
 The exercises are where the learning actually happens — do them.
 
 ---

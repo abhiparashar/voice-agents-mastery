@@ -1,8 +1,8 @@
 # Status: complete
 
-The curriculum described in `README.md` is finished. All **56 files** in the README manifest
-exist — 55 chapters plus `00-setup/bootstrap.sh` — totalling roughly **270,000 words**, with
-**377 exercises** and a worked answer for every one.
+The curriculum described in `README.md` is finished. All **57 files** in the README manifest
+exist — 55 chapters, one mini-projects list, plus `00-setup/bootstrap.sh` — totalling roughly
+**271,000 words**, with **377 exercises** and a worked answer for every one.
 
 There is no remaining work queued. This file is now a record of what was built and how, for
 whoever picks it up next.
@@ -23,10 +23,10 @@ whoever picks it up next.
 | `06-realtime-systems/` | 8 | complete |
 | `07-livekit/` | 6 | complete |
 | `08-eval-safety/` | 3 | complete |
-| `09-mastery/` | 4 | complete |
+| `09-mastery/` | 5 | complete |
 
 Verified mechanically at the end of the final session: every file in the README manifest
-exists; **zero broken relative links** across all 57 markdown files; every `## 3. From scratch`
+exists; **zero broken relative links** across all 58 markdown files; every `## 3. From scratch`
 listing runs; and the 377 exercise IDs in the chapters match the 377 answer IDs in
 `09-mastery/03-answers.md` exactly, with no gaps and no orphans.
 
@@ -70,11 +70,14 @@ falsified. They are listed in `09-mastery/03-answers.md` too.
 
 ### One deliberate deviation from the original spec
 
-Four files are reference artefacts rather than chapters and do not carry the eight-section
+Five files are reference artefacts rather than chapters and do not carry the seven-part
 format: `00-setup/05-bootcamp-coverage.md` (a syllabus mapping table, pre-existing),
 `00-setup/04-reading-list.md` (books, 40 papers, 15 repositories),
-`09-mastery/02-mastery-checklist.md` (138 scored capability statements) and
-`09-mastery/04-glossary.md` (237 terms). `09-mastery/03-answers.md` is likewise exempt from the
+`09-mastery/02-mastery-checklist.md` (138 scored capability statements),
+`09-mastery/04-glossary.md` (237 terms), and `09-mastery/05-mini-projects.md` (added
+2026-09-13: 33 single-concept, 30 min–2 hr projects mapped to specific chapters, distinct
+from the five multi-week capstones in `00-setup/05-bootcamp-coverage.md` §12).
+`09-mastery/03-answers.md` is likewise exempt from the
 1800–4500 word guidance, since it answers 377 exercises. Several chapters also run above 4500
 words; density was preferred over the cap where the extra words were verified facts, tables or
 source citations.

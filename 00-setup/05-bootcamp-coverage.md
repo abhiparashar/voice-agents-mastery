@@ -151,7 +151,10 @@ An 8-day bootcamp has to stop somewhere. These are the omissions that separate
 
 Projects are deliberately out of scope here — build them after the reading. This
 table tells you which chapters are the actual prerequisites for each, so the
-build is assembly rather than discovery.
+build is assembly rather than discovery. If a multi-week capstone is too much
+commitment before you know a chapter is worth it,
+[`09-mastery/05-mini-projects.md`](../09-mastery/05-mini-projects.md) lists 33
+single-concept projects (30 min – 2 hr each) instead.
 
 | Capstone | Hard part | Required chapters |
 |---|---|---|
