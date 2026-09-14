@@ -5,6 +5,11 @@ No projects, no app scaffolding — this is the material you read and work throu
 *understand* voice agents at the level of someone who can design the platform, not
 just call the API.
 
+> **Building, rather than reading?** `PROJECTS.md` is the companion ladder — 27 projects
+> in four tiers, from single-file drills to a flagship platform, each mapped to the
+> chapters it draws on and specified by acceptance criteria. This file teaches; that
+> file is what you ship.
+
 Written for a strong software engineer who is **new to speech and audio**, and who
 will be **shipping on LiveKit** — so LiveKit gets a deep, source-grounded module,
 while every alternative (Pipecat, raw WebSocket, Twilio, native speech-to-speech
@@ -135,6 +140,7 @@ introduced from zero.
 | `04-self-hosting-and-scale.md` | `livekit-server` config, Redis, TURN, why media can't sit behind an HTTP LB, worker containers, autoscaling and drain, Prometheus, and the honest Cloud-vs-self-host crossover |
 | `05-telephony-sip.md` | SIP for software engineers: INVITE/REFER, trunks, DIDs, G.711, DTMF and why in-band breaks ASR, transfer, AMD, the 8 kHz WER tax, and the PSTN failure modes nobody warns you about |
 | `06-alternatives.md` | LiveKit vs Pipecat vs Vapi/Retell vs raw WS vs Amazon Connect vs Azure Voice Live vs Riva vs direct S2S — same axes, decision flowchart, and how to keep business logic portable |
+| `00-beginner-lab/` | **On-ramp, added 2026-09-14.** Nine files for someone starting from zero on LiveKit: the mental model in plain words; a verified local lab (dev server, tokens, a PCM meter, a full `AgentSession` with **no API keys**); eight small projects; one large project in eight milestones; a debug playbook with real error strings and the 1.7.0→1.8.1 deltas; a build guide for **self-hosted LiveKit + Azure Speech (`centralindia`) + Gemini 2.5 Flash (`asia-south1`)** with vendor region tables parsed rather than recalled; the full provider landscape (cascade vs speech-to-speech, all 75 official plugins, open-source alternatives, who hosts where); and production latency + observability (the twelve levers, Prometheus, **OTel traces into Langfuse** with the span tree captured off the wire, and the PII switch measured). Not chapters — no eight-section format, no exercises |
 
 ### `08-eval-safety/`
 | File | Contents |

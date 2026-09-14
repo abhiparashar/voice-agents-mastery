@@ -112,3 +112,95 @@ Reproduce the bench with `00-setup/bootstrap.sh`, which extracts the doctor scri
 - **Version-pinned facts will drift.** `livekit-agents` 1.7.0, `pipecat-ai` 1.7.0,
   `moshi` 0.2.13 and the OTel GenAI conventions (which moved repositories mid-project and are
   still marked Development) are the most likely to move. Read the published wheel, never `main`.
+
+---
+
+## Addendum, 2026-09-14: `07-livekit/00-beginner-lab/`
+
+Nine files added as an on-ramp for a beginner shipping on LiveKit — mental model, a local lab,
+eight small projects, one large project, a debug playbook. Registered in the `README.md`
+`07-livekit/` table and explicitly **not** chapters: no eight-section format, no exercises, so
+the 55-chapter / 377-exercise invariants are untouched.
+
+Everything in it was run rather than recalled, on `livekit-server` **1.13.7** (Homebrew),
+`lk` **2.18.6**, `livekit-agents` **1.8.1**, `livekit` (Python realtime SDK) **1.1.18**,
+CPython 3.12.13, and **no API keys**. Scratch work in `/tmp/vam/lk`.
+
+Five facts the run established that the 1.7.0-era chapters do not have:
+
+1. **`AgentSession` now defaults to a local Silero VAD** (`inference.VAD(model="silero")` via
+   `livekit-local-inference`), 32 inferences/s at ~4.4 ms CPU per second of audio.
+2. **Adaptive interruption is on by default in dev mode and calls LiveKit Cloud**
+   (`wss://agent-gateway.livekit.cloud/v1/bargein`). Against a self-hosted server it 401s three
+   times over ~4.5 s, then falls back to VAD. `turn_handling={"interruption": {"mode": "vad"}}`
+   suppresses it.
+3. **`conversation_item_added` can carry an `AgentHandoff`**, so `ev.item.role` raises
+   `AttributeError`. Every published handler needs an `isinstance(ev.item, ChatMessage)` guard.
+4. **`AudioStream`'s default frame size is 10 ms**, not 20: `sample_rate=16000` alone yields 160
+   samples / 320 bytes; `frame_size_ms=20` yields the curriculum's 320 samples / 640 bytes.
+   `AudioFrame.data` is already an int16 `memoryview` — re-casting it raises `TypeError`.
+5. **A token grant for another room joins that room.** `room.connect()` takes no room name, so a
+   token endpoint that trusts a client-supplied room name is an authorisation bug; reproduced in
+   11 ms.
+
+A full `AgentSession` — streaming STT, streaming LLM, chunked TTS, turn-taking, metrics — can be
+run with **zero vendor accounts** by implementing the three ABCs as ~150 lines of energy
+detector, echo and beep generator. That listing is in `02-run-it-locally.md` §6 and is the
+recommended first exercise for anyone who has never seen the framework.
+
+### Second pass, same day: `06-your-stack-india.md`
+
+Written for a self-hosted deployment with Azure Speech + Gemini and Indian data residency.
+Region availability was parsed out of the vendors' own published tables rather than recalled
+(the Google table marks availability with `aria-label="Supported"` on empty `<td>`s, so a plain
+text scrape reads as blank — parse the HTML attributes):
+
+- **`gemini-2.5-flash` is available in Mumbai `asia-south1`**; `gemini-2.5-pro` is **not** (Tokyo
+  is the only Asian region for it), and Google's own Chirp STT/TTS reach only `asia-southeast1`.
+- **Azure Speech supports `centralindia`** and explicitly **does not support `southindia`** for
+  speech processing. So Azure-for-speech + Vertex-for-brain is the correct India pairing, not a
+  compromise.
+- The LiveKit Google plugin **defaults to `us-central1`** when `location` is unset — a silent
+  residency violation with no error. Flagged as the stack's headline trap.
+- `livekit-plugins-sarvam` **1.8.1** exists (Saaras STT, Bulbul TTS, India-hosted inference) and
+  is the recommended second STT/TTS for Indic and code-mixed audio.
+
+Verified by running: all three providers construct offline with dummy credentials
+(`azure.STT` streaming + interim, `azure.TTS` **non-streaming**, `google.LLM` with
+`vertexai=True, location="asia-south1"`); a hand-written `livekit.yaml` with keys from
+`livekit-server generate-keys` booted, carried a call, and exposed 270 `livekit_*` metrics on
+`prometheus_port`; and the published agent listing registered, was dispatched and started a
+session against that server. Wrong-credential failure modes were produced deliberately and are
+quoted verbatim in §8 — Azure STT `CancellationErrorCode.AuthenticationFailure` looping through
+"STT stream ended on an unrecoverable error, recreating", Azure TTS
+`APIStatusError('Unauthorized', 401, retryable=False)`, and 1.8.1's Cloud **turn detector** also
+401ing and falling back to a local mini model on self-hosted keys.
+
+### Third pass, same day: `07-provider-landscape.md`, `08-production-and-observability.md`
+
+The landscape file is spined on fact rather than memory: the **75 provider directories** in
+`livekit/agents` `main` (GitHub contents API, retrieved 2026-09-14) are quoted verbatim, and
+everything about quality/price is marked `[INFERENCE]`. Region facts reused from the same parsed
+vendor tables; notably `gemini-live-2.5-flash-native-audio` has **no Asian region** at all, and
+Microsoft's own docs say the Azure **voice live** API uses Sweden Central for generative-AI load
+balancing — so neither major S2S option is India-resident today, which is why the India stack is
+necessarily cascaded.
+
+The observability file rests on a measurement worth keeping: **`livekit-agents` 1.8.1 is fully
+OpenTelemetry-instrumented** (`telemetry/traces.py` imports the OTLP HTTP exporters for traces,
+logs *and* metrics; LiveKit Cloud is just another OTLP sink at
+`…/observability/{traces,logs,metrics}/otlp/v0`). A 35-line `http.server` OTLP receiver was run
+against a real call and captured the span tree verbatim `[MEASURED]`:
+`agent_session` (`gen_ai.operation.name=invoke_workflow`) → `start_agent_activity`
+(`create_agent`) → `on_enter` → `agent_turn` (`invoke_agent`) → `user_turn` → `llm_request`
+(`chat`, with `gen_ai.usage.*`, `gen_ai.response.finish_reasons`,
+`gen_ai.response.time_to_first_chunk`) → `llm_node` (`lk.response.ttft`) →
+`tts_request`/`tts_stream_adapter`/`tts_node` (`lk.response.ttfb`) → `on_exit` →
+`drain_agent_activity`. Both published listings (the receiver and the 15-line `setup_tracing()`)
+were then run verbatim together and reproduced it.
+
+**`set_tracer_provider(..., allow_pii=False)` was verified to strip content in-process**:
+`gen_ai.system_instructions`, `gen_ai.input.messages` and `gen_ai.output.messages` disappear
+while timings, model names, token counts and finish reasons remain. That is the switch to
+recommend by default, since Langfuse (self-hostable, OTLP HTTP at `/api/public/otel`, Basic auth
+from base64 `pk:sk`) otherwise receives the whole transcript.
