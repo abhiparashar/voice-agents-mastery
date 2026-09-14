@@ -141,6 +141,11 @@ starter code. Pick a project, open the chapter, adapt the listing.
   [`05-telephony-sip.md`](../07-livekit/05-telephony-sip.md) a real touch-tone
   recording and decode the digits. *(30 min)*
 
+> Shorter than these, and hands-on from zero: the verified lab in
+> [`00-beginner-lab/`](../07-livekit/00-beginner-lab/) — a dev server, tokens, and a full
+> `AgentSession` with no API keys — followed by its eight larger drills in
+> [`03-small-projects.md`](../07-livekit/00-beginner-lab/03-small-projects.md).
+
 ## `08-eval-safety/`
 
 - **Reproduce the golden-audio false alarm.** Show, on your own two TTS re-runs, that a

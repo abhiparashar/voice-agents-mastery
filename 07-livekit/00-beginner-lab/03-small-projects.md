@@ -197,3 +197,6 @@ Move to [`04-large-project.md`](04-large-project.md), then the tiered ladder in
 [`../../PROJECTS.md`](../../PROJECTS.md): **C4** turns L2+L3 into real local plugins, **S1** is a
 production-grade agent, **S6** is telephony, **F1** is the platform. The chapters those projects
 draw on are listed in each entry.
+
+Going the other way, for 30-minute single-concept drills across every module (not just LiveKit),
+see [`../../09-mastery/05-mini-projects.md`](../../09-mastery/05-mini-projects.md).
