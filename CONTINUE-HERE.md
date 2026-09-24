@@ -204,3 +204,24 @@ were then run verbatim together and reproduced it.
 while timings, model names, token counts and finish reasons remain. That is the switch to
 recommend by default, since Langfuse (self-hostable, OTLP HTTP at `/api/public/otel`, Basic auth
 from base64 `pk:sk`) otherwise receives the whole transcript.
+
+---
+
+## Addendum, 2026-09-24: `TOP-DOWN.md`
+
+A reverse-order path through the same material, for learners who want to see a running system
+before the theory: run → read production source → operate → replace components → foundations
+only when a symptom calls for them. Not a chapter, so the 55 / 377 counts do not change.
+
+Its code tour gives 48 `file:line` anchors into the published wheels **`livekit-agents` 1.8.1**
+and **`pipecat-ai` 1.11.0** (installed under `/tmp/vam/src`). Each anchor was checked by a
+script that confirmed the expected symbol is on that line. If you bump either version, re-run
+that check first; line numbers go stale before symbol names do. Two facts from reading the
+source that the chapters do not state:
+
+- **Endpointing in 1.8.1 is a two-delay rule.** `_bounce_eou_task` waits
+  `endpointing.min_delay`, and switches to `max_delay` when the turn detector's end-of-turn
+  probability is below `unlikely_threshold` (`voice/audio_recognition.py:1512`, `:1572`).
+- **Pipecat 1.11.0 renamed its runner.** `PipelineTask` is a deprecated alias for
+  `PipelineWorker` (`pipeline/worker.py`, deprecated since 1.3.0), and interruption resets each
+  processor's non-system queue (`processors/frame_processor.py:1130`).

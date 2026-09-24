@@ -5,10 +5,15 @@ No projects, no app scaffolding — this is the material you read and work throu
 *understand* voice agents at the level of someone who can design the platform, not
 just call the API.
 
-> **Building, rather than reading?** `PROJECTS.md` is the companion ladder — 27 projects
-> in four tiers, from single-file drills to a flagship platform, each mapped to the
-> chapters it draws on and specified by acceptance criteria. This file teaches; that
-> file is what you ship.
+> **Building, rather than reading?** §4 below is the hands-on companion — exercises,
+> mini-projects, and `PROJECTS.md`'s 27-project ladder, from single-file drills to a
+> flagship platform, each mapped to the chapters it draws on and specified by
+> acceptance criteria. This file teaches; that section is what you ship.
+>
+> **Want to see it working before the theory?** [`TOP-DOWN.md`](TOP-DOWN.md) reverses the
+> order: run a production agent, read its source (one turn, one interruption, one fleet, with
+> file:line anchors into `livekit-agents` 1.8.1 and `pipecat-ai` 1.11.0), operate it, then replace
+> its parts with your own. Each part you replace brings in the chapters that explain it.
 
 Written for a strong software engineer who is **new to speech and audio**, and who
 will be **shipping on LiveKit** — so LiveKit gets a deep, source-grounded module,
@@ -180,7 +185,37 @@ The exercises are where the learning actually happens — do them.
 
 ---
 
-## 4. Relationship to the Vizuara bootcamp syllabus
+## 4. Hands-on projects
+
+Reading alone doesn't produce the skill; the exercises and the projects below do. Three
+layers, in increasing commitment, all keyed to the same chapters as the study plan above:
+
+| Layer | What | Commitment | Where |
+|---|---|---|---|
+| **Chapter exercises** | 4–8 drills per chapter, every one with a worked answer | Minutes, same sitting | End of each chapter → `09-mastery/03-answers.md` |
+| **Mini-projects** | One concept, your own audio or numbers instead of the book's synthetic data — reproduce, break, or extend a `[MEASURED]` claim | 30 min – 2 hr | [`09-mastery/05-mini-projects.md`](09-mastery/05-mini-projects.md), one list per module |
+| **LiveKit beginner lab** | A verified local lab with zero API keys, then eight small projects and one large project (an appointment desk on web *and* phone) in confidence-building order | 2 h – 10 weeks | [`07-livekit/00-beginner-lab/`](07-livekit/00-beginner-lab/) |
+| **Project ladder** | Portfolio-grade builds — drills → components → systems → one flagship — each specified by measured acceptance criteria, not "it demos" | Weeks | [`PROJECTS.md`](PROJECTS.md), 27 projects in 4 tiers |
+| **Top-down path** | The same chapters and projects in reverse order: run → read production source → operate → replace components → foundations only when a symptom calls for them | 8+ weeks | [`TOP-DOWN.md`](TOP-DOWN.md) |
+
+**How they fit the study plan:** do a chapter's exercises as you read it; do that module's
+mini-project the same sitting if the claim is worth reproducing on your own data; once a
+track is finished (end of week 5 for turn-taking, end of week 8 for the whole curriculum),
+start pulling the corresponding tier off `PROJECTS.md` — it names the exact chapters each
+project draws on, so nothing there requires re-reading. If you're specifically shipping on
+LiveKit, the beginner lab's small projects double as Tier-1-equivalent practice before you
+touch `PROJECTS.md` at all.
+
+**Time-boxed?** `PROJECTS.md` §5 names the minimum subset that still argues the whole
+thesis — *you measure before you claim, you can defend a turn-taking policy with data, you
+can operate what you build, you know whether it works* — without committing to a flagship.
+
+No starter code anywhere in this stack by design: each chapter's own "From scratch" section
+*is* the starter code. Pick a project, open the chapter, adapt the listing.
+
+---
+
+## 5. Relationship to the Vizuara bootcamp syllabus
 
 Every bullet of the 8-day syllabus at `voice-agents.vizuara.ai` is mapped to a
 chapter in `00-setup/05-bootcamp-coverage.md`, with the gaps that syllabus leaves
@@ -197,7 +232,7 @@ called out explicitly. Summary:
 | 7. Production architecture | `06-realtime-systems/05..08`, `08-eval-safety/*` | Adds SLOs, capacity math, chaos drills, cost models, compliance |
 | 8. End-to-end / deployment | `07-livekit/*`, `06-realtime-systems/08` | Adds self-hosting, SIP telephony, plugin authoring, alternatives analysis |
 
-## 5. Ground rules
+## 6. Ground rules
 
 - **No hand-waving.** If a chapter says "the jitter buffer adapts", it shows the algorithm.
 - **Everything runs on an M5 Mac** unless marked `[NEEDS GPU]`.
